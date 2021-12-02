@@ -51,16 +51,12 @@ const NamespacePage = () => {
   return (
     <React.Fragment>
       <PageHeader>
-        <PageHeaderTitle title="Bonfire" />
+        <PageHeaderTitle title="Ephemeral Namespaces" />
         <p> This is a proof of concept </p>
       </PageHeader>
       <Main>
         <Stack hasGutter>
           <StackItem>
-            <Title headingLevel="h2" size="3xl">
-              {' '}
-              Namespaces{' '}
-            </Title>
             <NamespaceList/>
           </StackItem>
           <StackItem>
