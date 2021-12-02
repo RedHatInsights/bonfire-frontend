@@ -14,6 +14,11 @@ const NoPermissionsPage = lazy(() =>
     /* webpackChunkName: "NoPermissionsPage" */ './Routes/NoPermissionsPage/NoPermissionsPage'
   )
 );
+const NamespacePage = lazy(() =>
+  import(
+    /* webpackChunkName: "SamplePage" */ './Routes/NamespacePage/NamespacePage'
+  )
+);
 
 /**
  * the Switch component changes routes depending on the path.
@@ -35,6 +40,7 @@ export const Routes = () => (
       <Route path="/sample" component={SamplePage} />
       <Route path="/oops" component={OopsPage} />
       <Route path="/no-permissions" component={NoPermissionsPage} />
+      <Route path="/namespaces" component={NamespacePage} />
       {/* Finally, catch all unmatched routes */}
       <Route>
         <Redirect to="/sample" />
