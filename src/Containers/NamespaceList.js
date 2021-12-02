@@ -23,6 +23,41 @@ export const NamespaceList = () => {
         fetchData()
     }, []);
 
+    const reloadData = () => {
+        setIsLoaded(false);
+        fetchData();
+    }
+
+    const reserveButton = (
+        <Button
+            onClick={() => {
+                fetch(`/namespaces`, {
+                    method: 'POST'
+                })
+                .then(res => res.json())
+                .then(response => {
+                    console.log(response);
+                    reloadData();
+                })
+                .catch(error => console.log(error))
+            }}
+        >
+            Reserve
+        </Button>
+    );
+
+    const extendAction = (namespace) => {
+        fetch(`/namespaces/${namespace}`, {
+            method: 'PUT'
+        })
+        .then(res => res.json())
+        .then(response => {
+            console.log(response);
+            reloadData();
+        })
+        .catch(error => console.log(error))
+    }
+
     const nsActions = [
         {
             title: 'Deploy Apps',
@@ -30,7 +65,7 @@ export const NamespaceList = () => {
         },
         {
             title: 'Extend',
-            onClick: (rowId) => console.log('Clicked deploy apps on row ', rowId)
+            onClick: (event, rowId, rowData) => console.log('Clicked deploy apps on row ', rowId)
         },
         {
             title: 'Release',
@@ -45,7 +80,7 @@ export const NamespaceList = () => {
             <TableToolbar>
                 <ToolbarGroup>
                     <ToolbarItem>
-                        <Button>Reserve</Button>
+                        {reserveButton}
                     </ToolbarItem>
                 </ToolbarGroup>
             </TableToolbar>
@@ -59,7 +94,7 @@ export const NamespaceList = () => {
                     </Thead>
                     <Tbody>
                         {namespaceData.map((ns, index) => 
-                            <Tr key={index}>
+                            <Tr key={ns.name}>
                                 <Td>
                                     {ns.name}
                                 </Td>
