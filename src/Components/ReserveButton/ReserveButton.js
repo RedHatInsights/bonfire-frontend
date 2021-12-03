@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
 const ReserveButton = () => {
-
   const dispatch = useDispatch();
 
   const handleAlert = (variant, title, description) => {
@@ -17,33 +16,25 @@ const ReserveButton = () => {
     );
   };
 
-
   const handleReserveButtonClick = () => {
     handleAlert(
-      "info",
-      "Reserving an ephemeral namespace",
-      "A request to reserve a namespace has been dispatched"
+      'info',
+      'Reserving an ephemeral namespace',
+      'A request to reserve a namespace has been dispatched'
     );
 
     fetch(`/namespaces`, {
-      method: 'POST'
+      method: 'POST',
     })
-    .then(res => res.json())
-    .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data);
-        handleAlert(
-            "success",
-            `Reserved namespace ${data.namespace}`
-        )
-    })
-    .catch(error => console.log(error))
-  }
+        handleAlert('success', `Reserved namespace ${data.namespace}`);
+      })
+      .catch((error) => console.log(error));
+  };
 
-  return(
-    <Button onClick={() => handleReserveButtonClick()}>
-        Reserve
-    </Button>
-  );
+  return <Button onClick={() => handleReserveButtonClick()}>Reserve</Button>;
 };
 
 export default ReserveButton;
