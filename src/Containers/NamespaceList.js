@@ -11,6 +11,7 @@ export const NamespaceList = () => {
     const [ isLoaded, setIsLoaded ] = useState(false);
     const [ namespaceData, setNamespaceData ] = useState();
     const [ isModalOpen, setIsModalOpen ] = useState(false);
+    const [ modalNamespace, setModalNamespace ] = useState(null)
 
     const handleAlert = (variant, title, description) => {
         dispatch(
@@ -43,9 +44,10 @@ export const NamespaceList = () => {
         fetchData();
     }
 
-    // const deployAction = () => {
-    //     setIsModalOpen(true)
-    // }
+    const deployAction = (namespace) => {
+        setModalNamespace(namespace)
+        setIsModalOpen(true)
+    }
 
     const extendAction = (namespace) => {
         handleAlert(
@@ -75,7 +77,7 @@ export const NamespaceList = () => {
         {
             title: 'Deploy Apps',
             onClick: () => {
-                setIsModalOpen(true)
+                deployAction(namespace);
             }
         },
         {
@@ -138,12 +140,13 @@ export const NamespaceList = () => {
                 </TableComposable>
             : <div> Gathering namespaces... </div>
             }
-            { isModalOpen ?
+            <React.Fragment>
                 <AppModal
+                    isOpen={isModalOpen}
                     onClose={() => {setIsModalOpen(false)}}
+                    namespace={modalNamespace}
                 />
-            : {}
-            }
+            </React.Fragment>
         </React.Fragment>
     );
 };
