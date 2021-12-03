@@ -1,19 +1,34 @@
 import React, { useState, useEffect } from 'react';
 
 import { TableComposable, Thead, Tbody, Tr, Th, Td } from '@patternfly/react-table';
-import { TableToolbar } from '@redhat-cloud-services/frontend-components';
-import { Button, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { useDispatch } from 'react-redux';
+import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
+import { AppModal } from './AppModal';
+
 
 export const NamespaceList = () => {
+    const dispatch = useDispatch();
     const [ isLoaded, setIsLoaded ] = useState(false);
-    const [ namespaceData, setNamespaceData ] = useState()
+    const [ namespaceData, setNamespaceData ] = useState();
+    const [ isModalOpen, setIsModalOpen ] = useState(false);
+
+    const handleAlert = (variant, title, description) => {
+        dispatch(
+            addNotification({
+                variant: variant,
+                title: title,
+                description: description,
+            })
+        );
+    };
 
     const fetchData = () => {
+        console.log("fetching data")
         fetch(`/namespaces`)
         .then(res => res.json())
-        .then(response => {
-            console.log(response);
-            setNamespaceData(response.namespaces);
+        .then(data => {
+            console.log(data);
+            setNamespaceData(data.namespaces);
             setIsLoaded(true);
         })
         .catch(error => console.log(error));
@@ -28,62 +43,59 @@ export const NamespaceList = () => {
         fetchData();
     }
 
-    const reserveButton = (
-        <Button
-            onClick={() => {
-                fetch(`/namespaces`, {
-                    method: 'POST'
-                })
-                .then(res => res.json())
-                .then(response => {
-                    console.log(response);
-                    reloadData();
-                })
-                .catch(error => console.log(error))
-            }}
-        >
-            Reserve
-        </Button>
-    );
+    // const deployAction = () => {
+    //     setIsModalOpen(true)
+    // }
 
     const extendAction = (namespace) => {
+        handleAlert(
+            "info",
+            `Extending the reservation for namespace ${namespace}`
+        )
         fetch(`/namespaces/${namespace}`, {
             method: 'PUT'
         })
-        .then(res => res.json())
-        .then(response => {
-            console.log(response);
-            reloadData();
-        })
+        .then(setTimeout(() => reloadData(), 2000))
         .catch(error => console.log(error))
     }
 
-    const nsActions = [
+    const releaseAction = (namespace) => {
+        handleAlert(
+            "info",
+            `Releasing the reservation for namespace ${namespace}`
+        )
+        fetch(`/namespaces/${namespace}`, {
+            method: 'DELETE'
+        })
+        .then(setTimeout(() => reloadData(), 3000)) // Figure out better delay
+        .catch(error => console.log(error))
+    }
+
+    const nsActions = namespace => [
         {
             title: 'Deploy Apps',
-            onClick: (rowId) => console.log('Clicked deploy apps on row ', rowId)
+            onClick: () => {
+                setIsModalOpen(true)
+            }
         },
         {
             title: 'Extend',
-            onClick: (event, rowId, rowData) => console.log('Clicked deploy apps on row ', rowId)
+            onClick: () => {
+                extendAction(namespace);
+            }
         },
         {
             title: 'Release',
-            onClick: (rowId) => console.log('Clicked deploy apps on row ', rowId)
+            onClick: () => {
+                releaseAction(namespace);
+            }
         }
     ]
 
     const columns = ['Name', 'Reserved', 'Env Status', 'Apps Ready', 'Requester', 'Expires']
-
+    
     return (
         <React.Fragment>
-            <TableToolbar>
-                <ToolbarGroup>
-                    <ToolbarItem>
-                        {reserveButton}
-                    </ToolbarItem>
-                </ToolbarGroup>
-            </TableToolbar>
             { isLoaded ?      
                 <TableComposable aria-label='Namespace table'>
                     <Thead>
@@ -93,7 +105,7 @@ export const NamespaceList = () => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {namespaceData.map((ns, index) => 
+                        {namespaceData.map(ns => 
                             <Tr key={ns.name}>
                                 <Td>
                                     {ns.name}
@@ -114,9 +126,10 @@ export const NamespaceList = () => {
                                     {ns.expires_in}
                                 </Td>
                                 <Td
+                                    // Upgrade to ActionColumn
                                     actions={{
-                                        items: nsActions,
-                                        disable: ns.reserved
+                                        items: nsActions(ns.name),
+                                        disable: !ns.reserved
                                     }}
                                 />
                             </Tr>
@@ -124,6 +137,12 @@ export const NamespaceList = () => {
                     </Tbody>
                 </TableComposable>
             : <div> Gathering namespaces... </div>
+            }
+            { isModalOpen ?
+                <AppModal
+                    onClose={() => {setIsModalOpen(false)}}
+                />
+            : {}
             }
         </React.Fragment>
     );

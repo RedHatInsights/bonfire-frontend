@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -8,6 +8,8 @@ import {
   Stack,
   Title,
   Spinner,
+  Level,
+  LevelItem,
 } from '@patternfly/react-core';
 import { Main } from '@redhat-cloud-services/frontend-components/Main';
 import {
@@ -33,31 +35,71 @@ import { NamespaceList } from '../../Containers/NamespaceList'
  */
 const NamespacePage = () => {
   const dispatch = useDispatch();
+  const [ reload, setReload ] = useState(false);
 
   useEffect(() => {
     insights?.chrome?.appAction?.('namespace-page');
   }, []);
 
-  const handleAlert = () => {
+  const reloadData = () => {
+    setReload(reload ? false : true);
+  }
+
+  const handleAlert = (variant, title, description) => {
     dispatch(
       addNotification({
-        variant: 'success',
-        title: 'Notification title',
-        description: 'notification description',
+        variant: variant,
+        title: title,
+        description: description,
       })
     );
   };
 
+  const reserveButton = (
+    <Button
+        onClick={() => {
+            handleAlert(
+                "info",
+                "Reserving an ephemeral namespace",
+                "A request to reserve a namespace has been dispatched"
+            )
+            
+            fetch(`/namespaces`, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                reloadData();
+                handleAlert(
+                    "success",
+                    `Reserved namespace ${data.namespace}`
+                )
+            })
+            .catch(error => console.log(error))
+        }}
+    >
+        Reserve
+    </Button>
+);
+
   return (
     <React.Fragment>
       <PageHeader>
-        <PageHeaderTitle title="Ephemeral Namespaces" />
-        <p> This is a proof of concept </p>
+        <Level>
+            <LevelItem>
+              <PageHeaderTitle title="Ephemeral Namespaces" />
+                <p> This is a proof of concept </p>
+            </LevelItem>
+            <LevelItem>
+                {reserveButton}
+            </LevelItem>
+        </Level>
       </PageHeader>
       <Main>
         <Stack hasGutter>
           <StackItem>
-            <NamespaceList/>
+            <NamespaceList key={reload}/>
           </StackItem>
           <StackItem>
             <Suspense fallback={<Spinner />}>
