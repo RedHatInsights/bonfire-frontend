@@ -1,13 +1,9 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
-import { withRouter, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router-dom';
 
 import {
-  Button,
   StackItem,
   Stack,
-  Title,
-  Spinner,
   Level,
   LevelItem,
 } from '@patternfly/react-core';
@@ -16,72 +12,35 @@ import {
   PageHeader,
   PageHeaderTitle,
 } from '@redhat-cloud-services/frontend-components/PageHeader';
-import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
-
-
-const SampleComponent = lazy(() =>
-  import('../../Components/SampleComponent/sample-component')
-);
 
 import './namespace-page.scss';
 import { NamespaceList } from '../../Containers/NamespaceList'
+import { ReserveButton } from '../../Components/ReserveButton';
 
-/**
- * A smart component that handles all the api calls and data needed by the dumb components.
- * Smart components are usually classes.
- *
- * https://reactjs.org/docs/components-and-props.html
- * https://medium.com/@thejasonfile/dumb-components-and-smart-components-e7b33a698d43
- */
 const NamespacePage = () => {
-  const dispatch = useDispatch();
-  const [ reload, setReload ] = useState(false);
+
+  const [ isLoaded, setIsLoaded ] = useState(false);
+  const [ namespaceData, setNamespaceData ] = useState();
 
   useEffect(() => {
     insights?.chrome?.appAction?.('namespace-page');
   }, []);
 
-  const reloadData = () => {
-    setReload(reload ? false : true);
-  }
+  useEffect(() => {
+    fetchData()
+  }, []);
 
-  const handleAlert = (variant, title, description) => {
-    dispatch(
-      addNotification({
-        variant: variant,
-        title: title,
-        description: description,
-      })
-    );
+  const fetchData = () => {
+    console.log("fetching data")
+    fetch(`/namespaces`)
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        setNamespaceData(data.namespaces);
+        setIsLoaded(true);
+    })
+    .catch(error => console.log(error));
   };
-
-  const reserveButton = (
-    <Button
-        onClick={() => {
-            handleAlert(
-                "info",
-                "Reserving an ephemeral namespace",
-                "A request to reserve a namespace has been dispatched"
-            )
-            
-            fetch(`/namespaces`, {
-                method: 'POST'
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                reloadData();
-                handleAlert(
-                    "success",
-                    `Reserved namespace ${data.namespace}`
-                )
-            })
-            .catch(error => console.log(error))
-        }}
-    >
-        Reserve
-    </Button>
-);
 
   return (
     <React.Fragment>
@@ -92,19 +51,14 @@ const NamespacePage = () => {
                 <p> This is a proof of concept </p>
             </LevelItem>
             <LevelItem>
-                {reserveButton}
+                <ReserveButton/>
             </LevelItem>
         </Level>
       </PageHeader>
       <Main>
         <Stack hasGutter>
           <StackItem>
-            <NamespaceList key={reload}/>
-          </StackItem>
-          <StackItem>
-            <Suspense fallback={<Spinner />}>
-              <SampleComponent />
-            </Suspense>
+             { isLoaded ? <NamespaceList namespaces={namespaceData}/> : <div> Gathering namespaces... </div> }
           </StackItem>
         </Stack>
       </Main>
