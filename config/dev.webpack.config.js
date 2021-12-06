@@ -15,7 +15,7 @@ const { config: webpackConfig, plugins } = config({
       context: ['/namespaces'],
       target: 'http://localhost:5000',
       secure: false,
-      changeOrigin: true
+      changeOrigin: true,
     },
   ],
 });
