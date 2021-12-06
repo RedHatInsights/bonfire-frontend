@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button } from '@patternfly/react-core';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
-const ReserveButton = ({refresh}) => {
+const ReserveButton = ({ refresh }) => {
   const dispatch = useDispatch();
 
   const handleAlert = (variant, title, description) => {
@@ -39,3 +40,7 @@ const ReserveButton = ({refresh}) => {
 };
 
 export default ReserveButton;
+
+ReserveButton.propTypes = {
+  refresh: PropTypes.func,
+};

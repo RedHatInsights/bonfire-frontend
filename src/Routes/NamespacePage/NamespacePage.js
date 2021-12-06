@@ -37,10 +37,10 @@ const NamespacePage = () => {
   };
 
   const refreshData = () => {
-      console.log('refreshing namespace data');
-      setIsLoaded(false);
-      fetchData();
-  }
+    console.log('refreshing namespace data');
+    setIsLoaded(false);
+    fetchData();
+  };
 
   return (
     <React.Fragment>
@@ -51,7 +51,7 @@ const NamespacePage = () => {
             <p> This is a proof of concept </p>
           </LevelItem>
           <LevelItem>
-            <ReserveButton refresh={refreshData}/>
+            <ReserveButton refresh={refreshData} />
           </LevelItem>
         </Level>
       </PageHeader>
