@@ -36,6 +36,12 @@ const NamespacePage = () => {
       .catch((error) => console.log(error));
   };
 
+  const refreshData = () => {
+      console.log('refreshing namespace data');
+      setIsLoaded(false);
+      fetchData();
+  }
+
   return (
     <React.Fragment>
       <PageHeader>
@@ -45,7 +51,7 @@ const NamespacePage = () => {
             <p> This is a proof of concept </p>
           </LevelItem>
           <LevelItem>
-            <ReserveButton />
+            <ReserveButton refresh={refreshData}/>
           </LevelItem>
         </Level>
       </PageHeader>

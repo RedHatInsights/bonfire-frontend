@@ -3,7 +3,7 @@ import { Button } from '@patternfly/react-core';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '@redhat-cloud-services/frontend-components-notifications/redux';
 
-const ReserveButton = () => {
+const ReserveButton = ({refresh}) => {
   const dispatch = useDispatch();
 
   const handleAlert = (variant, title, description) => {
@@ -30,6 +30,7 @@ const ReserveButton = () => {
       .then((data) => {
         console.log(data);
         handleAlert('success', `Reserved namespace ${data.namespace}`);
+        refresh();
       })
       .catch((error) => console.log(error));
   };
