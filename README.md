@@ -1,8 +1,10 @@
 [![Build Status](https://travis-ci.org/RedHatInsights/frontend-starter-app.svg?branch=master)](https://travis-ci.org/RedHatInsights/frontend-starter-app)
 
-# frontend-starter-app
+# bonfire-frontend
 
-React.js starter app for Red Hat Insights products that includes Patternfly 4 and shared Red Hat cloud service frontend components.
+This app serves as the frontend for [bonfire](https://github.com/RedHatInsights/bonfire). The goal is to provide an accessible platform to reserve and utilize namespaces in the ephemeral cluster.
+
+This is a WIP, and is built from the RedHatInsights [starter-app](https://github.com/RedHatInsights/frontend-starter-app).
 
 ## Getting started
 
